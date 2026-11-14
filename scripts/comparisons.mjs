@@ -181,7 +181,7 @@ export async function run(db,c,o={},pos=[]){
  for(const k of Object.keys(o))if(!allowed.has(k))throw Error('Unknown option --'+k);
  if(c!=='import'&&pos.length)throw Error('Unexpected positional argument');
  for(const k of ['json','dry-run'])if(k in o&&typeof o[k]!=='boolean')throw Error(`--${k} is a boolean flag, not a value`);
- if(writes.has(c))required(o,'actor');
+ if(writes.has(c))o={...o,actor:required(o,'actor')};
  await db.exec('BEGIN');
  try{const result=await perform(db,c,o,pos);await db.exec(o['dry-run']?'ROLLBACK':'COMMIT');return result;}
  catch(e){await db.exec('ROLLBACK');throw e;}

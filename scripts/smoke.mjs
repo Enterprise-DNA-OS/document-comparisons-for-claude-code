@@ -30,6 +30,7 @@ try{
  for(const change of ['1','2'])await call('decide',{...actor,ref:p.code,change,decision:'accepted',note:'Reviewed source and agreed handling'});
  await bad('decide',{...actor,ref:p.code,change:'1',decision:'accepted',note:' '},/note/);
  await bad('signoff',{...actor,ref:p.code,evidence:'Self review'},/independent/);
+ await bad('signoff',{actor:'  TEST OPERATOR  ',ref:p.code,evidence:'Self review'},/independent/);
  await call('signoff',{...reviewer,ref:p.code,evidence:'Independent second review of this comparison revision'});eq((await call('review-queue')).find(x=>x.code===p.code).status,'signed');
  await call('log',{...actor,ref:p.code,note:'<script>test note</script>'});eq((await call('review-queue')).find(x=>x.code===p.code).status,'signed');
  await call('decide',{...actor,ref:p.code,change:'1',decision:'hold',note:'New question from reviewer'});eq((await call('review-queue')).find(x=>x.code===p.code).status,'review');ok((await call('signoff-history')).some(x=>!x.current));
