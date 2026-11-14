@@ -86,7 +86,7 @@ async function perform(db,c,o,pos){
  if(c==='help')return commands.map(command=>({command,options:(options[command]||[]).map(k=>'--'+k).join(' '),actor:writes.has(command)}));
  if(c==='list'){const k=o.kind||'documents';if(!collections.includes(k))throw Error('Unknown collection');return db.query(`select * from ${k} order by created_at,id`);}
  if(c==='show')return [await resolve(db,o.kind||'comparisons',required(o,'ref'))];
- if(c==='changes'){const p=await resolve(db,'comparisons',required(o,'ref'));return db.query('select ordinal,location,kind,before_text,after_text,report_text,priority,decision,review_note from change_register where comparison_id=$1 order by ordinal',[p.id]);}
+ if(c==='changes'){const p=await resolve(db,'comparisons',required(o,'ref'));return db.query('select ordinal,location,kind,before_text,after_text,report_text,source_tag,source_note,priority,decision,review_note,reviewer from change_register where comparison_id=$1 order by ordinal',[p.id]);}
  if(c==='add'){
   const r=(await db.query('insert into documents(code,title,matter,owner,classification,retention_review_on) values($1,$2,$3,$4,$5,$6) returning *',[required(o,'code'),required(o,'title'),required(o,'matter'),required(o,'owner'),enumValue(o.classification||'confidential',['confidential','internal','public']),o['retention-on']?date(o['retention-on']):null]))[0];
   await event(db,o,c,r.code,null,r);return [r];
@@ -170,7 +170,10 @@ async function perform(db,c,o,pos){
    const a=(await db.query('select body from versions where id=$1',[p.original_id]))[0],b=(await db.query('select body from versions where id=$1',[p.revised_id]))[0];
    const parts=diffLines(a.body,b.body,{timeout:3000,maxEditLength:20000});if(!parts)throw Error('Comparison exceeds processing limit');
    html='<pre style="white-space:pre-wrap">'+parts.map(x=>x.added?`<ins style="background:#dcfce7">${esc(x.value)}</ins>`:x.removed?`<del style="background:#fee2e2">${esc(x.value)}</del>`:esc(x.value)).join('')+'</pre>';
-  }else html=htmlTable(rows);
+  }else {
+   html=htmlTable(rows,p.mode==='text'?['ordinal','location','before_text','after_text']:['ordinal','location','report_text','source_tag','source_note']);
+   html+='<h2>Review decisions</h2>'+htmlTable(rows,['ordinal','priority','decision','review_note','reviewer']);
+  }
   const file=writeOut('drafts',`${c}-${p.id}-${Date.now()}`,page({title:c==='redline'?'Text redline for human review':'Draft departures report',subtitle:p.title,sections:[{title:'Review boundary',note:'Review notes do not change or accept edits in the source file. Text comparison does not check document layout, hidden content or images.',html:'<p>Draft for human review. Do not send without approval.</p>'},{title:'Changes',html}]}));return [{file}];
  }
  throw Error('Unknown command: '+c);

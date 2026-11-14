@@ -11,9 +11,19 @@
         "sql": "select code,title,matter,owner,due_on,status,mode,scope_reviewed from review_queue where id=$1"
       },
       {
-        "title": "Changes and decisions",
-        "note": "A recorded decision does not alter the source document. Imported text remains the vendor report wording.",
-        "sql": "select ordinal,location,kind,before_text,after_text,report_text,source_tag,source_note,decision,review_note,reviewer from change_register where comparison_id=$1 order by ordinal"
+        "title": "Compared text",
+        "note": "Text differences only. Check against both original documents.",
+        "sql": "select ordinal,location,before_text,after_text from changes where comparison_id=$1 and (before_text<>'' or after_text<>'') order by ordinal"
+      },
+      {
+        "title": "Imported annotations",
+        "note": "Vendor report wording is preserved without interpreting before and after text.",
+        "sql": "select ordinal,location,report_text,source_tag,source_note from changes where comparison_id=$1 and source_data<>'{}'::jsonb order by ordinal"
+      },
+      {
+        "title": "Review decisions",
+        "note": "A recorded decision does not alter the source document.",
+        "sql": "select ordinal,priority,decision,review_note,reviewer from change_register where comparison_id=$1 order by ordinal"
       }
     ]
   },
