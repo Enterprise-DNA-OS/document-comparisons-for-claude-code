@@ -1,32 +1,22 @@
-#!/usr/bin/env node
-// Loads the demo data (supabase/seed.sql). Write seed.sql so a second run does nothing:
-// wrap it in a do $$ block that returns early when a known demo row already exists.
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
-import { pathToFileURL } from 'node:url';
-import { getDb, REPO_ROOT } from './lib/db.mjs';
-
-export async function seed(db) {
-  await db.exec('BEGIN');
-  try {
-    await db.exec(readFileSync(path.join(REPO_ROOT, 'supabase', 'seed.sql'), 'utf8'));
-    await db.exec('COMMIT');
-  } catch (error) {
-    await db.exec('ROLLBACK');
-    throw error;
-  }
+import fs from 'node:fs';import path from 'node:path';import {pathToFileURL} from 'node:url';
+import {getDb,REPO_ROOT} from './lib/db.mjs';import {run} from './comparisons.mjs';
+export async function seed(db){
+ await db.exec(fs.readFileSync(path.join(REPO_ROOT,'supabase/seed.sql'),'utf8'));
+ const o={actor:'Demo operator'};const day=n=>new Date(Date.now()+n*86400000).toISOString().slice(0,10);
+ for(const ref of ['DOC-101','DOC-103'])for(const label of ['original','revised'])await run(db,'add-version',{...o,ref,label,file:path.join(REPO_ROOT,`fixtures/${label}.txt`)});
+ if(!(await db.query("select id from comparisons where code='CMP-101'")).length){
+  await run(db,'compare',{...o,ref:'DOC-101',code:'CMP-101',original:'original',revised:'revised',owner:'Mara Chen','due-on':day(-2)});
+  await run(db,'tag',{...o,ref:'CMP-101',change:'2',priority:'high'});
+  await run(db,'decide',{...o,ref:'CMP-101',change:'1',decision:'hold',note:'Confirm cash-flow impact with owner'});
+  await run(db,'review-scope',{...o,ref:'CMP-101',evidence:'Demo text sources reviewed line by line; no graphics or hidden content'});
+ }
+ if(!(await db.query("select id from comparisons where code='CMP-102'")).length){
+  await run(db,'import',{...o,ref:'DOC-102',code:'CMP-102',file:path.join(REPO_ROOT,'fixtures/draftable.csv'),source:'fictional-demo-report',owner:'Ari Morgan','due-on':day(-5)},['draftable']);
+  await db.exec("update comparisons set created_at=now()-interval '20 days' where code='CMP-102'; alter table comparisons disable trigger touch; update comparisons set updated_at=now()-interval '20 days' where code='CMP-102'; alter table comparisons enable trigger touch;");
+ }
+ if(!(await db.query("select id from comparisons where code='CMP-103'")).length){
+  await run(db,'compare',{...o,ref:'DOC-103',code:'CMP-103',original:'original',revised:'revised',owner:'Mara Chen','due-on':day(4)});
+ }
+ return {seeded:true};
 }
-
-const isMain = process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
-if (isMain) {
-  const db = await getDb();
-  try {
-    if (db.mode === 'postgres' && !process.argv.includes('--demo-database')) {
-      throw new Error('Shared database seed requires --demo-database. Use only an empty disposable demo database.');
-    }
-    await seed(db);
-    console.log(`seed: demo data ready (${db.mode})`);
-  } finally {
-    await db.close();
-  }
-}
+if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href){const db=await getDb();try{await seed(db);console.log('Fictional comparison demo seeded.');}finally{await db.close();}}

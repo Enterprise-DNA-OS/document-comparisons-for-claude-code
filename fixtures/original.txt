@@ -1,0 +1,4 @@
+1. Payment is due within 30 days of invoice.
+2. The supplier will deliver each Monday.
+3. Either party may terminate on 60 days written notice.
+4. Confidential information must remain confidential.

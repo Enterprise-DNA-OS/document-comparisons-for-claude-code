@@ -1,43 +1,55 @@
-# Document Comparisons for Claude Code: operating instructions
+# Document Comparisons for Claude Code
 
-This file is the brain. Claude Code reads it at the start of every session. It says who this is for, how work gets done, and the one right way to do each recurring job.
+For legal and commercial teams reviewing document changes. The demo business is fictional Harbour Document Review. The operator cares about the right source versions, unresolved departures and the evidence behind each decision. Replace the business identity in brand.json before working with real data.
 
-## Who this is for
+Read before writing. Use the CLI, never answer from memory. Options use --name=value and all writes require --actor. Actor labels are operator-supplied, not authenticated identities. If a name is ambiguous, show the candidate IDs and obtain the right one.
 
-- **Business:** [YOUR BUSINESS]
-- **Operator:** [YOUR NAME], [your role]
-- **What matters most:** [the one or two outcomes you care about]
+## The recurring jobs
 
-Fill this in once. A worker with context knows. A worker without it guesses.
-
-## How to work
-
-1. **Take a brief, not a script.** The operator describes the outcome. You run the right command and present the answer.
-2. **Read before you write.** Before drafting anything about a record, read its full history first.
-3. **Plain language.** Short sentences. No filler. Numbers in tables.
-4. **Silent success, loud problems.** No play-by-play. Say what broke and what you did about it.
-5. **Stop at the line.** Anything that sends, deletes, or faces a customer waits for a yes in this session.
-
-## Routing table: one right way for each recurring job
-
-| When the operator asks for... | Use this |
+| Ask | Recipe |
 |---|---|
-| <!-- TODO(author): one row per slash command --> | `/...` |
+| /review-queue | Read each comparison, owner, deadline and outstanding decision count. |
+| /attention | Find overdue comparisons, unchecked scope, stale reviews and unresolved high-priority changes. |
+| /open-changes | Read the changes still awaiting a decision, across all comparisons. |
+| /high-priority | Read high-priority changes and their current review decisions. |
+| /reviewer-load | Count outstanding comparisons, unresolved changes and overdue reviews by owner. |
+| /stale-reviews | Read comparisons without a review update for fourteen days. |
+| /source-register | Read source filenames, version labels, extraction scope and file hashes. |
+| /signoff-history | Show which signoffs refer to the current revision and which are stale. |
+| /compliance | Read record checks for retention, confidentiality and comparison scope |
+| /activity | Read notes and the ordered activity record. |
+| /help | List the commands and their accepted options. |
+| /list | Read a collection with --kind=documents|versions|comparisons|changes|decisions|signoffs|activity|import_batches. |
+| /show | Read a comparison with --ref |
+| /changes | Read the full change text and current decisions for --ref=<comparison>. |
+| /add | Add a document with --code, --title, --matter, --owner and --retention-on=YYYY-MM-DD |
+| /add-version | Add an immutable source with --ref=<document> --label=<version> --file=<txt-or-docx> |
+| /compare | Compare two versions of one document: --ref=<document> --code=<comparison> --original=<label> --revised=<label> --owner=<person> --due-on=YYYY-MM-DD |
+| /assign | Change --owner or --due-on for --ref=<comparison> |
+| /tag | Mark --change=<ordinal> on --ref=<comparison> with --priority=normal|high |
+| /decide | Record --decision=accepted|rejected|hold|open for --ref=<comparison> --change=<ordinal> with a factual --note |
+| /review-scope | Use --ref=<comparison> --evidence=<reference> only after a human confirms extraction against both originals, or an unfiltered complete vendor report against its originals |
+| /review-access | Record --ref=<document> --evidence=<reference> --retention-on=YYYY-MM-DD after a person checks authorised access and retention purpose |
+| /signoff | Read show, changes and compliance first |
+| /log | Record a factual --note against --ref=<comparison> |
+| /import | Read docs/replace-draftable.md |
+| /export | Write a new file with --file=<path> |
+| /verify-sources | Check stored source text against its recorded hash |
+| /weekly-review | Build the Monday review from review-queue, attention and reviewer-load |
+| /draft-departures | Read --ref=<comparison> and its history, then write the departures working paper into drafts |
+| /draft-review | Write the weekly review into drafts from the current queue, attention and owner load. |
+| /redline | Create a read-only text redline for --ref=<comparison> |
+| /docs | Render departures and signoff papers |
+| /view | Render the week, departures and assurance reports |
+| /customise | Write and test a new migration |
+| /new-view | Add a read-only report |
 
-If an ask fits nothing here, run the CLI directly (`npm run <cli> -- --help`) and then propose a new command for it.
+## Rules
 
-## Hard rules
+Never send, publish or delete. Drafts stay in drafts/. Never claim legal advice, document completeness, or that review decisions edit the source file. Never compare documents from different matters by accident. Read compliance and the extraction boundary before signoff. Only record a signoff on the named reviewer's instruction.
 
-- Never send email or messages from here. Draft to `drafts/`, a person sends.
-- Never delete records without an explicit yes in this session. Prefer marking closed or archived.
-- Never invent a record. If a name is ambiguous, list the candidates and ask.
-- The database is the source of truth. If the answer is not in it, say so.
+The database is trusted-operator only. Configure authentication, least privilege, backups, encryption and access rules before sharing a hosted instance. There is no tenant-facing access policy. Keep original files in the firm's authorised document store; the database holds extracted text and hashes. Treat exports and reports as confidential.
 
-## Where things live
+Use npm test before committing. Apply new migrations with npm run migrate. Keep CLAUDE.md and AGENTS.md together. The same .claude/commands recipes serve Claude Code, Codex, OpenCode and Cursor.
 
-- `scripts/` the CLI. `scripts/lib/db.mjs` picks `DATABASE_URL` (Postgres, Supabase) or the embedded database in `.data/`.
-- `supabase/migrations/` the schema, plain SQL. `npm run migrate` applies it.
-- `.claude/commands/` the slash commands. Add one every time the same ask comes twice.
-- `docs/` the thesis and the guide for moving off Draftable.
-
-Built by Enterprise DNA. Installed and run for you as part of Omni: https://enterprisedna.co/omni/instead-of/draftable
+Omni by Enterprise DNA installs and runs the agreed version: https://enterprisedna.co/omni/book/?offer=replace-software&utm_campaign=draftable&utm_medium=repo-instructions

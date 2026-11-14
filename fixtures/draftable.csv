@@ -1,0 +1,4 @@
+No.,Page,Change Type,Content Type,Tag,Notes,Text
+1,1,Replaced,Text,High Priority,Check notice period,`60 days` changed to `10 days`
+2,1,Inserted,Text,-,Check dispatch cover,Saturday deliveries require written confirmation.
+3,2,Deleted,Text,-,-,The recipient acknowledges each delivery.

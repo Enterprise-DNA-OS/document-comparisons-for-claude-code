@@ -1,13 +1,39 @@
 [
   {
     "name": "week",
-    "title": "This week",
-    "subtitle": "Document Comparisons for Claude Code: what needs attention, rendered by npm run view",
+    "title": "Document review week",
     "sections": [
       {
-        "title": "Needs attention",
-        "note": "TODO(author): point this at the industry's attention view (overdue, stuck, quiet).",
-        "sql": "select 'replace me' as item, 'TODO(author)' as why"
+        "title": "Comparisons",
+        "sql": "select code,title,owner,due_on,changes,unresolved,status from review_queue order by due_on"
+      },
+      {
+        "title": "Attention",
+        "sql": "select distinct * from attention_queue order by detail,code"
+      }
+    ]
+  },
+  {
+    "name": "departures",
+    "title": "Unresolved changes",
+    "sections": [
+      {
+        "title": "Decisions outstanding",
+        "sql": "select comparison,ordinal,location,report_text,before_text,after_text,priority,decision,owner from change_register where decision in ('open','hold') order by comparison,ordinal"
+      }
+    ]
+  },
+  {
+    "name": "assurance",
+    "title": "Source and review checks",
+    "sections": [
+      {
+        "title": "Findings",
+        "sql": "select * from compliance_findings order by code,rule"
+      },
+      {
+        "title": "Signoffs",
+        "sql": "select p.code,s.revision,p.revision current_revision,s.actor,s.evidence from signoffs s join comparisons p on p.id=s.comparison_id order by p.code,s.revision"
       }
     ]
   }

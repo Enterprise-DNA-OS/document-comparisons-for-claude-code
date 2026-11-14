@@ -1,11 +1,42 @@
 [
   {
-    "name": "example",
-    "title": "TODO(author): the first document this industry must produce",
-    "for_each": "select gen_random_uuid() as id, 'Example' as name",
-    "file": "name",
+    "name": "departures",
+    "title": "Departures review",
+    "for_each": "select id,code from comparisons order by code",
+    "file": "code",
     "sections": [
-      { "title": "Details", "sql": "select 'replace me' as item, $1::text as record_id" }
+      {
+        "title": "Review brief",
+        "layout": "record",
+        "sql": "select code,title,matter,owner,due_on,status,mode,scope_reviewed from review_queue where id=$1"
+      },
+      {
+        "title": "Changes and decisions",
+        "note": "A recorded decision does not alter the source document. Imported text remains the vendor report wording.",
+        "sql": "select ordinal,location,kind,before_text,after_text,report_text,source_tag,source_note,decision,review_note,reviewer from change_register where comparison_id=$1 order by ordinal"
+      }
+    ]
+  },
+  {
+    "name": "signoff",
+    "title": "Comparison review record",
+    "for_each": "select id,code from comparisons order by code",
+    "file": "code",
+    "sections": [
+      {
+        "title": "Scope",
+        "layout": "record",
+        "sql": "select code,title,mode,revision,scope_evidence,scope_actor from comparisons where id=$1"
+      },
+      {
+        "title": "Review decisions",
+        "sql": "select c.ordinal,d.decision,d.note,d.actor,d.created_at from decisions d join changes c on c.id=d.change_id where c.comparison_id=$1 order by d.sequence"
+      },
+      {
+        "title": "Signoffs",
+        "note": "Each signoff applies only to its recorded revision. It is not approval to send or sign the underlying agreement.",
+        "sql": "select revision,actor,evidence,created_at from signoffs where comparison_id=$1 order by revision"
+      }
     ]
   }
 ]

@@ -1,24 +1,11 @@
-# Why there is no front end
+# The database holds the review
 
-Draftable is a database with a subscription. The tables underneath it are ordinary: a few entities, a few relationships, a handful of workflows you repeat every week. What you pay for is the layer on top that lets people who do not write SQL get at those tables. Screens, filters, dashboards, forms.
+The working records are source versions, comparisons, changes, decisions and evidence. An operator can ask for overdue departures or draft the weekly review without opening a separate application. The same instructions work in Claude Code, Codex, OpenCode and Cursor.
 
-That layer used to be the whole product, because talking to a database was hard. It is not hard any more. Open this folder in Claude Code, describe what you want, and it writes the query, runs it, and explains the answer. Ask a question the dashboard never had a chart for and you still get an answer.
+The delivered HTML files are read-only reports. They show source text, changed blocks and review decisions. They contain no forms or actions and need no application server.
 
-## What you gain
+Draftable's viewer offers synchronised document navigation, native redlines and Office integrations. This base compares extracted text. It does not reproduce page layout, images, tracked-change markup or a Word editing experience. Text moves can appear as deletion and insertion. It is not a legal interpretation engine. Verify both originals before relying on any comparison.
 
-- **Better answers.** A dashboard shows what the vendor decided to chart. Here you ask your own question, in your own words, and get it answered against your own data.
-- **No seats.** Everyone who needs to look can look. The bill does not grow with headcount.
-- **Your data in your Postgres.** Plain tables. Back them up, query them from anything, leave any time. There is no export step because there is nothing to leave.
-- **A process that matches you.** When your way of working changes, you add a command. You do not wait for a feature request to clear.
+There is no mobile app, shared editor, drag-and-drop interface or browser login. The CLI can run on local data without a server. Generated HTML uses the template's external font stylesheet when opened online; the system-font fallback works offline. Keep confidential working papers private.
 
-## What you give up
-
-- **A visual board.** Stages are a table you ask about, not cards you drag.
-- **A phone app.** It runs where Claude Code runs.
-- **A vendor help desk.** This is open source. Enterprise DNA supports the installed version for businesses that want someone to call.
-
-## Who this fits
-
-Small teams who already use Claude Code, or who would rather learn to ask than learn another interface. If your team needs a screen to look at all day, keep Draftable. If you need the answers more than the screens, this is cheaper, faster and yours.
-
-Installed and run for you: https://enterprisedna.co/omni/instead-of/draftable
+Enterprise DNA can build the agreed document connections, team screens and review controls into a custom version. First prove the required comparison behaviour against representative files and the firm's acceptance criteria.

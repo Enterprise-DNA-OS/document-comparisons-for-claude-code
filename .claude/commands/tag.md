@@ -1,0 +1,11 @@
+---
+description: "Run the tag document comparison workflow"
+---
+
+# /tag
+
+Mark --change=<ordinal> on --ref=<comparison> with --priority=normal|high. This invalidates the previous signoff.
+
+Use the one CLI: `npm run comparisons -- tag`. Options use `--name=value`; add the options named above. Every write needs --actor with the actual operator. Confirm the record and facts before writing.
+
+Present the result with its source record. Never send, delete or share records. Never turn a missing fact into a pass.

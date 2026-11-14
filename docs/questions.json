@@ -1,0 +1,42 @@
+[
+  {
+    "question": "Which comparisons are overdue and still have unresolved changes?",
+    "command": "review-queue"
+  },
+  {
+    "question": "Which high-priority changes have no settled decision?",
+    "command": "high-priority"
+  },
+  {
+    "question": "Which reviewer has the most outstanding departures?",
+    "command": "reviewer-load"
+  },
+  {
+    "question": "Which imported reports still need a completeness check?",
+    "command": "compliance"
+  },
+  {
+    "question": "Which reviews have sat untouched for fourteen days?",
+    "command": "stale-reviews"
+  },
+  {
+    "question": "Which signoffs were superseded by a later decision?",
+    "command": "signoff-history"
+  },
+  {
+    "question": "Which original source versions were used?",
+    "command": "source-register"
+  },
+  {
+    "question": "Which stored source texts fail their integrity check?",
+    "command": "verify-sources"
+  },
+  {
+    "question": "Which documents need a retention or confidentiality review?",
+    "command": "compliance"
+  },
+  {
+    "question": "What changed in the review and who recorded it?",
+    "command": "activity"
+  }
+]
